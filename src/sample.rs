@@ -23,7 +23,7 @@ impl<'a> ParseContext<'a> {
 
     fn parse_explicit<T, F>(&self, parser: F) -> Result<T, ParseError>
     where
-        F: FnOnce(&str) -> Result<T, ParseError>
+        F: FnOnce(&str) -> Result<T, ParseError>,
     {
         let context = self.context.ok_or(ParseError::MissingColumn)?;
         parser(context)
@@ -53,7 +53,7 @@ impl FromStr for Sample {
             free: ParseContext::new(columns.next()).parse()?,
             available: ParseContext::new(columns.next()).parse()?,
             buffers: ParseContext::new(columns.next()).parse()?,
-            cached:  ParseContext::new(columns.next()).parse()?,
+            cached: ParseContext::new(columns.next()).parse()?,
             swap_total: ParseContext::new(columns.next()).parse()?,
             swap_free: ParseContext::new(columns.next()).parse()?,
         })
@@ -72,21 +72,21 @@ fn parse_timestamp(s: &str) -> Result<DateTime<Utc>, ParseError> {
         fn next(&mut self) -> Option<Self::Item> {
             self.0 += 1;
             match self.0 {
-                1    => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
-                2    => Some(Item::Literal("-")),
-                3    => Some(Item::Numeric(Numeric::Month, Pad::Zero)),
-                4    => Some(Item::Literal("-")),
-                5    => Some(Item::Numeric(Numeric::Day, Pad::Zero)),
-                6    => Some(Item::Space(" ")),
-                7    => Some(Item::Numeric(Numeric::Hour, Pad::Zero)),
-                8    => Some(Item::Literal(":")),
-                9    => Some(Item::Numeric(Numeric::Minute, Pad::Zero)),
-                10   => Some(Item::Literal(":")),
-                11   => Some(Item::Numeric(Numeric::Second, Pad::Zero)),
-                12   => Some(Item::Fixed(Fixed::Nanosecond6)),
-                13   => Some(Item::Literal(" UTC")),
-                
-                _    => None,
+                1 => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
+                2 => Some(Item::Literal("-")),
+                3 => Some(Item::Numeric(Numeric::Month, Pad::Zero)),
+                4 => Some(Item::Literal("-")),
+                5 => Some(Item::Numeric(Numeric::Day, Pad::Zero)),
+                6 => Some(Item::Space(" ")),
+                7 => Some(Item::Numeric(Numeric::Hour, Pad::Zero)),
+                8 => Some(Item::Literal(":")),
+                9 => Some(Item::Numeric(Numeric::Minute, Pad::Zero)),
+                10 => Some(Item::Literal(":")),
+                11 => Some(Item::Numeric(Numeric::Second, Pad::Zero)),
+                12 => Some(Item::Fixed(Fixed::Nanosecond6)),
+                13 => Some(Item::Literal(" UTC")),
+
+                _ => None,
             }
         }
     }
@@ -94,10 +94,8 @@ fn parse_timestamp(s: &str) -> Result<DateTime<Utc>, ParseError> {
     let mut parsed = Parsed::default();
     match format::parse(&mut parsed, s, ParseItems::default()) {
         Err(e) => Err(ParseError::failure(e, s)),
-        Ok(()) => {
-            parsed
-                .to_datetime_with_timezone(&Utc)
-                .map_err(|e| ParseError::failure(e, s))
-        }
+        Ok(()) => parsed
+            .to_datetime_with_timezone(&Utc)
+            .map_err(|e| ParseError::failure(e, s)),
     }
 }

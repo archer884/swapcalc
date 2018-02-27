@@ -73,7 +73,7 @@ pub enum ParseError {
 }
 
 impl ParseError {
-    pub fn failure<E, S>(error: E, context: S) -> Self 
+    pub fn failure<E, S>(error: E, context: S) -> Self
     where
         E: error::Error + 'static,
         S: Into<String>,
@@ -88,9 +88,7 @@ impl fmt::Display for ParseError {
 
         match *self {
             MissingColumn => write!(f, "Column missing from data"),
-            Failure(ref error, ref context) => {
-                write!(f, "{} in context:\n  {:?}", error, context)
-            }
+            Failure(ref error, ref context) => write!(f, "{} in context:\n  {:?}", error, context),
         }
     }
 }

@@ -22,7 +22,6 @@ fn execute(path: &str) -> Result<()> {
         .map(BufReader::new)
         .map_err(|e| Error::io(e, format!("Unable to open path: {}", path)))?;
 
-
     let mut summary = Summary::default();
     for line in reader.lines() {
         let line = line.map_err(|e| Error::io(e, "Bad utf-8"))?;
