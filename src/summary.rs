@@ -20,6 +20,7 @@ impl Average {
 
 #[derive(Default)]
 pub struct Summary {
+    total_ram: Option<u64>,
     ram_average: Average,
     ram_max: u64,
     swap_average: Average,
@@ -37,18 +38,28 @@ impl Summary {
         self.swap_max = cmp::max(self.swap_max, swap);
         self.ram_average.append(ram);
         self.swap_average.append(swap);
+
+        if self.total_ram.is_none() {
+            self.total_ram = Some(sample.total);
+        }
     }    
 }
 
 impl fmt::Display for Summary {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        use std::borrow::Cow;
+
         write!(
             f,
-            "{}\n{}\n{}\n{}",
+            "Average RAM:\t{}\nAverage Swap:\t{}\nMax RAM:\t{}\nMax Swap:\t{}\nTotal RAM:\t{}",
             self.ram_average.result(),
             self.swap_average.result(),
             self.ram_max,
             self.swap_max,
+            match self.total_ram {
+                None => Cow::from("N/A"),
+                Some(ram) => Cow::from(ram.to_string()),
+            }
         )
     }
 }
