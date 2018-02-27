@@ -40,7 +40,9 @@ fn format_string(b: &mut Bencher) {
 // 12 => Some(Item::Fixed(Fixed::Nanosecond6)),
 // 13 => Some(Item::Literal(" UTC")),
 //
-// I would have expected this to be faster as a result of just going in order, etc.
+// I would have expected this to be faster as a result of just going in order--increasing by one 
+// on each iteration--but that's not the case. Additionally, the slice- and array-based options
+// I have tried (all of which involve cloning) are also slower by approximately the same margin.
 
 #[bench]
 fn item_iterator(b: &mut Bencher) {
