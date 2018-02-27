@@ -73,18 +73,16 @@ fn parse_timestamp(s: &str) -> Result<DateTime<Utc>, ParseError> {
             self.0 += 1;
             match self.0 {
                 1 => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
-                2 => Some(Item::Literal("-")),
                 3 => Some(Item::Numeric(Numeric::Month, Pad::Zero)),
-                4 => Some(Item::Literal("-")),
                 5 => Some(Item::Numeric(Numeric::Day, Pad::Zero)),
                 6 => Some(Item::Space(" ")),
                 7 => Some(Item::Numeric(Numeric::Hour, Pad::Zero)),
-                8 => Some(Item::Literal(":")),
                 9 => Some(Item::Numeric(Numeric::Minute, Pad::Zero)),
-                10 => Some(Item::Literal(":")),
                 11 => Some(Item::Numeric(Numeric::Second, Pad::Zero)),
                 12 => Some(Item::Fixed(Fixed::Nanosecond6)),
                 13 => Some(Item::Literal(" UTC")),
+                2 | 4 => Some(Item::Literal("-")),
+                8 | 10 => Some(Item::Literal(":")),
 
                 _ => None,
             }
