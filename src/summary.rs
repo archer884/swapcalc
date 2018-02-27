@@ -47,7 +47,11 @@ impl Summary {
 
 impl fmt::Display for Summary {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        use std::borrow::Cow;
+        let formatted_total_ram = self.total_ram.map(|n| n.to_string());
+        let formatted_total_ram = formatted_total_ram
+            .as_ref()
+            .map(|s| s.as_ref())
+            .unwrap_or("N/A");
 
         write!(
             f,
@@ -56,10 +60,7 @@ impl fmt::Display for Summary {
             self.swap_average.result(),
             self.ram_max,
             self.swap_max,
-            match self.total_ram {
-                None => Cow::from("N/A"),
-                Some(ram) => Cow::from(ram.to_string()),
-            }
+            formatted_total_ram,
         )
     }
 }
