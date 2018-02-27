@@ -62,26 +62,37 @@ impl FromStr for Sample {
 
 fn parse_timestamp(s: &str) -> Result<DateTime<Utc>, ParseError> {
     use chrono::format::{self, Fixed, Item, Numeric, Pad, Parsed};
-    
-    // I kinda wanna try this out, but this seems a little bit tough to write.
-    static PARSE_ITEMS: &[Item] = &[
-        Item::Numeric(Numeric::Year, Pad::Zero),
-        Item::Literal("-"),
-        Item::Numeric(Numeric::Month, Pad::Zero),
-        Item::Literal("-"),
-        Item::Numeric(Numeric::Day, Pad::Zero),
-        Item::Space(" "),
-        Item::Numeric(Numeric::Hour, Pad::Zero),
-        Item::Literal(":"),
-        Item::Numeric(Numeric::Minute, Pad::Zero),
-        Item::Literal(":"),
-        Item::Numeric(Numeric::Second, Pad::Zero),
-        Item::Fixed(Fixed::Nanosecond6),
-        Item::Literal(" UTC"),
-    ];
+
+    #[derive(Default)]
+    struct ParseItems(u8);
+
+    impl Iterator for ParseItems {
+        type Item = Item<'static>;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            self.0 += 1;
+            match self.0 {
+                1    => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
+                2    => Some(Item::Literal("-")),
+                3    => Some(Item::Numeric(Numeric::Month, Pad::Zero)),
+                4    => Some(Item::Literal("-")),
+                5    => Some(Item::Numeric(Numeric::Day, Pad::Zero)),
+                6    => Some(Item::Space(" ")),
+                7    => Some(Item::Numeric(Numeric::Hour, Pad::Zero)),
+                8    => Some(Item::Literal(":")),
+                9    => Some(Item::Numeric(Numeric::Minute, Pad::Zero)),
+                10   => Some(Item::Literal(":")),
+                11   => Some(Item::Numeric(Numeric::Second, Pad::Zero)),
+                12   => Some(Item::Fixed(Fixed::Nanosecond6)),
+                13   => Some(Item::Literal(" UTC")),
+                
+                _    => None,
+            }
+        }
+    }
 
     let mut parsed = Parsed::default();
-    match format::parse(&mut parsed, s, PARSE_ITEMS.into_iter().cloned()) {
+    match format::parse(&mut parsed, s, ParseItems::default()) {
         Err(e) => Err(ParseError::failure(e, s)),
         Ok(()) => {
             parsed
