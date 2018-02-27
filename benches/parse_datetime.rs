@@ -9,6 +9,14 @@ use test::Bencher;
 
 static DATE: &str = "2018-02-27 16:32:13.802940 UTC";
 
+// I assume this gets slower for longer format strings. I dunno.
+//
+// This code looks different in part because I couldn't figure out how to write a format string
+// that would allow for parsing a datetime with timezone, so I'm parsing a naive datetime and
+// converting to UTC from there. It does not appear to be possible to set the timezone on a
+// naive datetime. I guess this is obvious, in retrospect, since that would literally be changing
+// the type of the value.
+
 #[bench]
 fn format_string(b: &mut Bencher) {
     let format = "%F %T%.f UTC";
@@ -23,7 +31,7 @@ fn format_string(b: &mut Bencher) {
 
 // Fun fact: I have tried two iterator implementations here, and one is significantly faster.
 //
-// In spite of my best guess, the following match expression contents are slower than the one in 
+// In spite of my best guess, the following match expression contents are slower than the one in
 // use below:
 //
 // 1 => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
@@ -40,13 +48,14 @@ fn format_string(b: &mut Bencher) {
 // 12 => Some(Item::Fixed(Fixed::Nanosecond6)),
 // 13 => Some(Item::Literal(" UTC")),
 //
-// I would have expected this to be faster as a result of just going in order--increasing by one 
+// I would have expected this to be faster as a result of just going in order--increasing by one
 // on each iteration--but that's not the case. Additionally, the slice- and array-based options
 // I have tried (all of which involve cloning) are also slower by approximately the same margin.
+//
+// One final note: "reusing" the same Parsed value on each iteration does nothing for performance.
 
 #[bench]
 fn item_iterator(b: &mut Bencher) {
-
     #[derive(Default)]
     struct ParseItems(u8);
 
