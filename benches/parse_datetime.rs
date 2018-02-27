@@ -88,3 +88,40 @@ fn item_iterator(b: &mut Bencher) {
         test::black_box(parsed.to_datetime_with_timezone(&Utc).unwrap());
     });
 }
+
+#[bench]
+fn item_iterator_b(b: &mut Bencher) {
+    #[derive(Default)]
+    struct ParseItems(u8);
+
+    impl Iterator for ParseItems {
+        type Item = Item<'static>;
+
+        fn next(&mut self) -> Option<Self::Item> {
+            self.0 += 1;
+            match self.0 {
+                1 => Some(Item::Numeric(Numeric::Year, Pad::Zero)),
+                2 => Some(Item::Literal("-")),
+                3 => Some(Item::Numeric(Numeric::Month, Pad::Zero)),
+                4 => Some(Item::Literal("-")),
+                5 => Some(Item::Numeric(Numeric::Day, Pad::Zero)),
+                6 => Some(Item::Space(" ")),
+                7 => Some(Item::Numeric(Numeric::Hour, Pad::Zero)),
+                8 => Some(Item::Literal(":")),
+                9 => Some(Item::Numeric(Numeric::Minute, Pad::Zero)),
+                10 => Some(Item::Literal(":")),
+                11 => Some(Item::Numeric(Numeric::Second, Pad::Zero)),
+                12 => Some(Item::Fixed(Fixed::Nanosecond6)),
+                13 => Some(Item::Literal(" UTC")),
+
+                _ => None,
+            }
+        }
+    }
+
+    b.iter(|| {
+        let mut parsed = Parsed::default();
+        parse(&mut parsed, DATE, ParseItems::default()).unwrap();
+        test::black_box(parsed.to_datetime_with_timezone(&Utc).unwrap());
+    });
+}
