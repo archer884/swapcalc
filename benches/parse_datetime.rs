@@ -21,6 +21,7 @@ static DATE: &str = "2018-02-27 16:32:13.802940 UTC";
 fn format_string(b: &mut Bencher) {
     let format = "%F %T%.f UTC";
 
+    test::black_box(DATE);
     b.iter(|| {
         let datetime = NaiveDateTime::parse_from_str(DATE, format)
             .map(|datetime| Utc.from_local_datetime(&datetime).single().unwrap());
@@ -82,6 +83,7 @@ fn item_iterator(b: &mut Bencher) {
         }
     }
 
+    test::black_box(DATE);
     b.iter(|| {
         let mut parsed = Parsed::default();
         parse(&mut parsed, DATE, ParseItems::default()).unwrap();
@@ -119,6 +121,7 @@ fn item_iterator_b(b: &mut Bencher) {
         }
     }
 
+    test::black_box(DATE);
     b.iter(|| {
         let mut parsed = Parsed::default();
         parse(&mut parsed, DATE, ParseItems::default()).unwrap();
