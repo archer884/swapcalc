@@ -50,7 +50,7 @@ impl fmt::Display for Error {
 
         write!(f, "{}", self.message)?;
         if let Some(cause) = self.cause() {
-            write!(f, "  {}", cause)?;
+            write!(f, ": {}", cause)?;
         }
 
         Ok(())
