@@ -1,0 +1,9 @@
+# Antimalware service, etc...
+
+Mention anti malware service executable and exceptions:
+
+https://ardalis.com/speed-up-visual-studio-build-times
+
+Caught by mem ✨#2538 on Discord, whoever that is...
+
+Is there no macOS equivalent?
